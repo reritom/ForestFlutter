@@ -1,13 +1,21 @@
-import 'models/item.dart';
-import 'models/survey.dart';
-import 'models/organisation.dart';
-import 'models/profile.dart';
+import '../models/item.dart';
+import '../models/survey.dart';
+import '../models/organisation.dart';
+import '../models/profile.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Interface {
+class ApiInterface {
   final String domain = 'http://10.0.2.2:8000';
+
+  // Singleton pattern
+  ApiInterface._internalConstructor();
+  static final ApiInterface _instance = ApiInterface._internalConstructor();
+
+  factory ApiInterface() {
+    return _instance;
+  }
 
   Future<bool> logIn(String username, String password) async {
     final uri = '$domain/api/account/login';
@@ -15,7 +23,7 @@ class Interface {
       'username': username,
       'password': password
     };
-    
+
     return http.post(uri, body: body).then((http.Response response) {
       final int statusCode = response.statusCode;
       if (statusCode < 200 || statusCode > 400) {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../interface.dart';
+import '../models/survey.dart';
 
 class SurveyPage extends StatefulWidget {
   @override
@@ -6,15 +8,35 @@ class SurveyPage extends StatefulWidget {
 }
 
 class _SurveyPageState extends State<SurveyPage> {
+  String _state = 'viewing';
+  void _stateUpdate(value) {
+    setState(() {
+      _state = value;
+    });
+  }
+
+  List<Survey> surveys = [];
+
+  @override
+  void initState() {
+    super.initState();
+    var interface = Interface();
+    interface.getSurveys().then((value){
+      setState(() {
+        surveys = value;
+      });
+    }).catchError((error) => print(error));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Surveys"),
       ),
-      body: Center(
-        child: Text("Page2"),
-      ),
+      body: ListView.builder(
+          itemCount: 10,
+          itemBuilder: (BuildContext context, index) => ListTile(title: Text(index.toString()),)),
       drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -43,10 +65,27 @@ class _SurveyPageState extends State<SurveyPage> {
             ],
           )
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: (){},
-          child: Icon(Icons.refresh)
-      ),
+      floatingActionButton: getFAB(_state, _stateUpdate)
     );
+  }
+}
+
+FloatingActionButton getFAB(_state, _stateUpdate) {
+  if (_state  == 'viewing') {
+    return FloatingActionButton(
+      onPressed: () {
+        _stateUpdate('adding');
+      },
+      child: Icon(Icons.add),
+      backgroundColor: Colors.greenAccent,
+    );
+  } else {
+      return FloatingActionButton(
+        onPressed: () {
+          _stateUpdate('viewing');
+        },
+        child: Icon(Icons.save),
+        backgroundColor: Colors.redAccent,
+      );
   }
 }
