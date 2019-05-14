@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'views/survey_page.dart';
 import 'views/settings_page.dart';
 import 'views/common/nav_drawer.dart';
-import 'interface.dart';
+import 'tools/api_interface.dart';
 
 void main() => runApp(myApp());
 
@@ -29,8 +29,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    var interface = Interface();
-    interface.checkLoginStatus().then((value) {
+    ApiInterface().checkLoginStatus().then((value) {
       setState(() {
         loggedIn = value;
       });

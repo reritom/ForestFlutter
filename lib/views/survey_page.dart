@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../interface.dart';
+import '../tools/bom.dart';
 import '../models/survey.dart';
 
 class SurveyPage extends StatefulWidget {
@@ -20,8 +20,7 @@ class _SurveyPageState extends State<SurveyPage> {
   @override
   void initState() {
     super.initState();
-    var interface = Interface();
-    interface.getSurveys().then((value){
+    Bom().getSurveys().then((value){
       setState(() {
         surveys = value;
       });
@@ -35,8 +34,8 @@ class _SurveyPageState extends State<SurveyPage> {
         title: Text("Surveys"),
       ),
       body: ListView.builder(
-          itemCount: 10,
-          itemBuilder: (BuildContext context, index) => ListTile(title: Text(index.toString()),)),
+          itemCount: surveys.length,
+          itemBuilder: (BuildContext context, index) => ListTile(title: Text(surveys[index].id),)),
       drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,

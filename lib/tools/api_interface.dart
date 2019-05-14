@@ -92,6 +92,14 @@ class ApiInterface {
     });
   }
 
+  Future<bool> deleteSurvey(Survey survey) async {
+    final uri = '$domain/api/survey/${survey.id}';
+
+    return http.delete(uri).then((http.Response response) {
+      return true;
+    });
+  }
+
   Future<List<Item>> getItems() async {
     final uri = '$domain/api/item';
     return http.get(uri).then((http.Response response) {
@@ -101,6 +109,32 @@ class ApiInterface {
       }
       var responseBody = json.decode(response.body);
       return responseBody['items'].map((itemJson) => Item.fromJson(itemJson)).toList();
+    });
+  }
+
+  Future<Item> postItem(Item item) async {
+    final uri = '$domain/api/item';
+    var body = {
+      'description': item.description,
+      'type': item.type,
+      'external_id': item.externalId
+    };
+
+    return http.post(uri, body: body).then((http.Response response) {
+      final int statusCode = response.statusCode;
+      if (statusCode < 200 || statusCode > 400) {
+        throw("Http error");
+      }
+      var responseBody = json.decode(response.body);
+      return Item.fromJson(responseBody['item']);
+    });
+  }
+
+  Future<bool> deleteItem(Item item) async {
+    final uri = '$domain/api/survey/${item.id}';
+
+    return http.delete(uri).then((http.Response response) {
+      return true;
     });
   }
 
