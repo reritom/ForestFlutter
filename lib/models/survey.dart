@@ -29,7 +29,7 @@ class Survey {
     surveyItems.add(item);
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'id': this.id,
       'created': this.created,

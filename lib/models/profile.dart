@@ -14,7 +14,7 @@ class Profile {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'username': this.username,
       'email': this.email
