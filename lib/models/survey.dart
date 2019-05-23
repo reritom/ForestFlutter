@@ -28,4 +28,14 @@ class Survey {
   void addSurveyItem(SurveyItem item) {
     surveyItems.add(item);
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': this.id,
+      'created': this.created,
+      'description': this.description,
+      'type': this.type,
+      'survey_items': this.surveyItems.map((surveyItem) => surveyItem.toMap()).toList()
+    };
+  }
 }

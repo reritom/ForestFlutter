@@ -25,4 +25,15 @@ class Organisation {
       publiclySearchable: json['publicly_searchable']
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': this.id,
+      'name': this.name,
+      'description': this.description,
+      'enterprise': this.enterprise,
+      'personal': this.personal,
+      'publicly_searchable': this.publiclySearchable
+    };
+  }
 }

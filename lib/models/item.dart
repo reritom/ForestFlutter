@@ -29,4 +29,14 @@ class Item {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': this.id,
+      'created': this.created,
+      'description': this.description,
+      'type': this.type,
+      'external_id': this.externalId,
+      'survey_history': this.surveyHistory
+    };
+  }
 }

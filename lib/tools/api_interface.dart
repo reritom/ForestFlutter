@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ApiInterface {
-  final String domain = 'http://10.0.2.2:8000';
+  final String domain = 'http://reritom.pythonanywhere.com';
+  List<Function> _loginCallbacks = [];
 
   // Singleton pattern
   ApiInterface._internalConstructor();
@@ -17,6 +18,18 @@ class ApiInterface {
     return _instance;
   }
 
+  void notifyLoginCallbacks() {
+    print("Notifying login callbacks");
+    for (var func in _loginCallbacks) {
+      func();
+    }
+  }
+
+  void onLogin(Function func) {
+    print("Registering login callback");
+    _loginCallbacks.add(func);
+  }
+
   Future<bool> logIn(String username, String password) async {
     final uri = '$domain/api/account/login';
     var body = {
@@ -24,37 +37,92 @@ class ApiInterface {
       'password': password
     };
 
-    return http.post(uri, body: body).then((http.Response response) {
+    print("Logging in");
+
+    try {
+      final response = await http.post(uri, body: body);
+      final int statusCode = response.statusCode;
+      if (statusCode < 200 || statusCode > 400) {
+        return false;
+      }
+      var responseBody = json.decode(response.body);
+      print("Log in ${responseBody['logged_in']}");
+
+      if (responseBody['logged_in']) {
+        notifyLoginCallbacks();
+      }
+      return responseBody['logged_in'];
+    }
+    catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> checkUsernameAvailability(String username) async {
+    final uri = '$domain/api/ajax/username';
+    var body = {
+      'username': username
+    };
+
+    try {
+      final response = await http.post(uri, body: body);
       final int statusCode = response.statusCode;
       if (statusCode < 200 || statusCode > 400) {
         throw("Http error");
       }
+
       var responseBody = json.decode(response.body);
-      return responseBody['logged_in'];
-    });
+      return responseBody['available'];
+    }
+    catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> signUp(String username, String password, String email) async {
+    final uri = '$domain/api/account/signup';
+    var body = {
+      'username': username,
+      'password': password,
+      'email': email
+    };
+
+    print("Signing up");
+
+    final response = await http.post(uri, body: body);
+    final int statusCode = response.statusCode;
+    if (statusCode < 200 || statusCode > 400) {
+      throw("Http error");
+    }
+    notifyLoginCallbacks();
+    return true;
   }
 
   Future<bool> checkLoginStatus() async {
+    print("Checking login status");
     final uri = '$domain/api/account/login';
-    return http.get(uri).then((http.Response response) {
+
+    try {
+      final response = await http.get(uri);
       final int statusCode = response.statusCode;
+
       if (statusCode < 200 || statusCode > 400) {
         throw("Http error");
       }
       var responseBody = json.decode(response.body);
+      print("Logged in ${responseBody['logged_in']}");
       return responseBody['logged_in'];
-    });
+    }
+    catch (e) {
+      return false;
+    }
   }
 
-  Future<bool> logOut() async {
+  Future<dynamic> logOut() async {
     final uri = '$domain/api/account/logout';
     return http.get(uri).then((http.Response response) {
       return true;
     });
-  }
-
-  bool signUp(String username, String password, String email) {
-    return true;
   }
 
   Future<List<Survey>> getSurveys() async {

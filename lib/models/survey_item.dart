@@ -19,4 +19,13 @@ class SurveyItem {
       itemId: json['item_id']
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': this.id,
+      'created': this.created,
+      'notes': this.notes,
+      'item_id': this.itemId
+    };
+  }
 }

@@ -13,4 +13,11 @@ class Profile {
       email: json['email']
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'username': this.username,
+      'email': this.email
+    };
+  }
 }
