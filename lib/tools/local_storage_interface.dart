@@ -1,5 +1,7 @@
 import 'package:forestr/models/survey.dart';
 import 'package:forestr/models/item.dart';
+import 'package:forestr/models/organisation.dart';
+import 'package:forestr/models/profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -41,6 +43,19 @@ class LocalStorageInterface {
     return surveys;
   }
 
+  Future<bool> cacheSurveys(List<Survey> surveys) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var encodedSurveys = surveys.map((survey) => json.encode(survey.toMap())).toList();
+    return prefs.setStringList('cached_surveys', encodedSurveys);
+  }
+
+  Future<List<Survey>> getCachedSurveys() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var surveys = prefs.get('cached_surveys') ?? [];
+    surveys = surveys.map((surveyJson) => Survey.fromJson(json.decode(surveyJson))).toList();
+    return surveys;
+  }
+
   Future<bool> storeItem(Item item) async {
     // We retrieve them first, append the new one, then store them again
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -54,6 +69,19 @@ class LocalStorageInterface {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var items = prefs.get('items') ?? [];
     items = items.map((itemJson) => Item.fromJson(itemJson)).toList();
+    return items;
+  }
+
+  Future<bool> cacheItems(List<Item> items) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var encodedItems = items.map((item) => json.encode(item.toMap())).toList();
+    return prefs.setStringList('cached_items', encodedItems);
+  }
+
+  Future<List<Item>> getCachedItems() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var items = prefs.get('cached_items') ?? [];
+    items = items.map((itemJson) => Item.fromJson(json.decode(itemJson))).toList();
     return items;
   }
 
@@ -71,5 +99,33 @@ class LocalStorageInterface {
     var settingsJson = prefs.getString('settings') ?? "{}";
     var settingsMap = json.decode(settingsJson);
     return settingsMap;
+  }
+
+  Future<bool> cacheProfile(Profile profile) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString('profile', json.encode(profile.toMap()));
+  }
+
+  Future<Profile> getCachedProfile() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var profile = prefs.get('profile');
+    if (profile != null) {
+      profile = Profile.fromJson(json.decode(profile));
+    }
+    return profile;
+  }
+
+  Future<bool> cacheOrganisation(Organisation organisation) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString('organisation', json.encode(organisation.toMap()));
+  }
+
+  Future<Organisation> getCachedOrganisation() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var organisation = prefs.get('organisation');
+    if (organisation != null) {
+        organisation = Organisation.fromJson(json.decode(organisation));
+    }
+    return organisation;
   }
 }
